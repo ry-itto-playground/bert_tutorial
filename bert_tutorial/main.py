@@ -23,6 +23,7 @@ src_dir = path.dirname(current_file_path)
 data_dir = f'{src_dir}/data'
 train_path = f'{data_dir}/train.csv'
 test_path = f'{data_dir}/test.csv'
+model_path = f'{data_dir}/model.pth'
 
 column_names = [N_STARS, REVIEWS]
 num_data = 5000
@@ -70,6 +71,13 @@ train_dataloader = DataLoader(
 test_dataloader = DataLoader(
     test_dataset, batch_size=batch_size, shuffle=False)
 
+batch_iterator = iter(train_dataloader)
+encoded_reviews, token_type_ids, attention_mask, label_tensor = next(
+    batch_iterator)
+
+print(encoded_reviews.shape)
+
+
 model = BertMlp('bert-base-uncased').to(device)
 
 crietion = CrossEntropyLoss(reduction='sum')
@@ -86,10 +94,7 @@ for epoch in range(epochs):
     epoch_loss = 0.0
     epoch_corrects = 0
 
-    print(len(train_dataloader.dataset[0]))
-    print(len(train_dataloader.dataset[1]))
-
-    for batch, (encoded_tokens, token_type_ids, attention_mask, labels) in enumerate(train_dataloader):
+    for batch, (encoded_tokens, token_type_ids, attention_mask, labels) in enumerate(tqdm(train_dataloader)):
         optimizer.zero_grad()
         outputs = model(encoded_tokens, token_type_ids, attention_mask)
 
@@ -107,3 +112,12 @@ for epoch in range(epochs):
     print(f'\n{"="*10}')
     print('Loss: {:.4f} Acc: {:.4f}\n'.format(epoch_loss, epoch_acc))
     print('='*10)
+
+checkpoints = {
+    'model_state_dict': model.state_dict(),
+    'optimizer': optimizer.state_dict(),
+    'criterion': crietion,
+}
+
+print('saving at %s' % (model_path))
+torch.save(checkpoints, model_path)

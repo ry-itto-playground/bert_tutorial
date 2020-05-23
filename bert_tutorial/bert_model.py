@@ -21,7 +21,7 @@ class BertMlp(Module):
         bert_embedded = self.bert_layer(
             input_ids=tokens,
             token_type_ids=token_type_ids,
-            attention_masks=attention,
+            attention_mask=attention,
         )
 
         # emb output (batch_size, seq_len, bert_hidden_size)

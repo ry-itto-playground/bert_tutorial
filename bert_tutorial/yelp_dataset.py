@@ -18,6 +18,6 @@ class YelpDataset(Dataset):
 
         encoded_reviews, token_type_ids, attention_mask = self.transformer.transform(
             review)
-        label_tensor = torch.LongTensor(label).to('cpu')
+        label_tensor = torch.tensor(label).long().to('cpu')
 
         return [*self.transformer.transform(review), label_tensor]
