@@ -22,9 +22,9 @@ class BertMlp(Module):
             input_ids=tokens,
             token_type_ids=token_type_ids,
             attention_mask=attention,
-        )
+        )[0][:, 0, :]
 
         # emb output (batch_size, seq_len, bert_hidden_size)
-        bert_embedded = bert_embedded[:, 0, :]
+        # bert_embedded = bert_embedded
 
         return self.dence(bert_embedded)
